@@ -25,13 +25,18 @@ public class Main {
         int[][] classes = createClasses(L, H, cw);
         int[] frequencies = getFrequencies(numberArray, classes);
         int[] cumulativeFs = getCumulativeFs(frequencies);
+        double[] relativeFs = getRelativeFs(frequencies, n);
+        double[] midpoints = getMidpoints(classes);
+        double[][] classBoundaries = getClassBoundaries(classes);
 
-        System.out.println("\nClasses\t\tf\t\tcf");
+        System.out.println("\nClasses\t\tf\t\tcf\t\trf\t\tMidpoints\t\t Class Boundaries");
         for (int i = 0; i < classes.length; i++){
-                System.out.printf("%d - %d\t\t%d\t\t%d\n", classes[i][0], classes[i][1], frequencies[i], cumulativeFs[i]);
+                System.out.printf("%d - %d\t\t%d\t\t%d\t\t%.2f\t\t%.1f\t\t%.1f - %.1f\n", classes[i][0], classes[i][1], frequencies[i], cumulativeFs[i], relativeFs[i], midpoints[i],
+                        classBoundaries[i][0], classBoundaries[i][1]);
         }
 
-        System.out.println("Summation of f: " + summation(frequencies, frequencies.length));
+        System.out.println("Summation of f: " + summationF(frequencies, frequencies.length));
+        System.out.println("Summation of rf: " + summationRf(relativeFs, relativeFs.length));
 
 
     }
@@ -132,11 +137,50 @@ public class Main {
         return cumulativeFs;
     }
 
-    private static int summation(int[] values, int i){
+    private static double[] getRelativeFs(int[] frequencies, int n) {
+        double[] relativeFs = new double[frequencies.length];
+
+        for (int i = 0; i < relativeFs.length; i++){
+            relativeFs[i] = (double)frequencies[i] / n;
+        }
+
+        return relativeFs;
+    }
+
+    private static double[] getMidpoints(int[][] classes){
+        double[] midpoints = new double[classes.length];
+
+        for (int i = 0; i < midpoints.length; i++){
+            midpoints[i] = (double)(classes[i][0] + classes[i][1]) / 2;
+        }
+
+        return midpoints;
+    }
+
+    private static double[][] getClassBoundaries(int[][] classes){
+        double[][] classBoundaries = new double[classes.length][2];
+
+        for (int i = 0; i < classBoundaries.length; i++){
+            classBoundaries[i][0] = classes[i][0] - 0.5;
+            classBoundaries[i][1] = classes[i][1] + 0.5;
+        }
+
+        return classBoundaries;
+    }
+
+
+    private static int summationF(int[] values, int i){
         if(i <= 0) {
             return 0;
         }
-            return (summation(values, i - 1) + values[i - 1]);
+            return (summationF(values, i - 1) + values[i - 1]);
+    }
+
+    private static double summationRf(double[] values, int i){
+        if(i <= 0) {
+            return 0;
+        }
+        return (summationRf(values, i - 1) + values[i - 1]);
     }
 
 
